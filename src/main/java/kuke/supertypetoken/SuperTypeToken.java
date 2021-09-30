@@ -7,17 +7,17 @@ import java.util.*;
 public class SuperTypeToken {
 
     static class TypesafeMap {
-        Map<TypeReference<?>, Object> map = new HashMap<>();
+        Map<Type, Object> map = new HashMap<>();
 
         <T> void put(TypeReference<T> tr, T value) {
-            map.put(tr, value);
+            map.put(tr.type, value);
         }
 
         <T> T get(TypeReference<T> tr) {
             if(tr.type instanceof Class<?>)
-                return ((Class<T>) tr.type).cast(map.get(tr));
+                return ((Class<T>) tr.type).cast(map.get(tr.type));
             else // ParameterizedType
-                return ((Class<T>)((ParameterizedType)tr.type).getRawType()).cast(map.get(tr));
+                return ((Class<T>)((ParameterizedType)tr.type).getRawType()).cast(map.get(tr.type));
         }
     }
 
@@ -29,19 +29,6 @@ public class SuperTypeToken {
             if(stype instanceof ParameterizedType) {
                 this.type = ((ParameterizedType)stype).getActualTypeArguments()[0];
             } else throw new RuntimeException();
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass().getSuperclass() != o.getClass().getSuperclass()) return false;
-            TypeReference<?> that = (TypeReference<?>) o;
-            return type.equals(that.type);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(type);
         }
     }
 
